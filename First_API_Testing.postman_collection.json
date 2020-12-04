@@ -1,0 +1,462 @@
+{
+	"info": {
+		"_postman_id": "88a7e6b8-1380-4f34-a083-19b99b510d4a",
+		"name": "First_API_Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Postman BDD",
+			"item": [
+				{
+					"name": "postman BDD",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "190a2ae7-4494-419e-8dfc-1e7cd9d10ff3",
+								"exec": [
+									"postman.setGlobalVariable('postmanBDD', responseBody);\r",
+									"//public - setGlobalVariable\r",
+									"//postmanBDD - variable\r",
+									"//responsebody - value of postmanBDD/test data"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "javascript"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://bigstickcarpet.com/postman-bdd/dist/postman-bdd.js",
+							"protocol": "http",
+							"host": [
+								"bigstickcarpet",
+								"com"
+							],
+							"path": [
+								"postman-bdd",
+								"dist",
+								"postman-bdd.js"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "1. Post - Create new landlord",
+			"item": [
+				{
+					"name": "Post_create_new_landlord",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "18971b99-81b5-4555-8bc7-05cac7ec887d",
+								"exec": [
+									"eval(globals.postmanBDD); // inherit\r",
+									"pm.environment.set(\"landlordId\", response.body.id);\r",
+									"\r",
+									"describe('Creating a new landlord', function() {\r",
+									"    it('should return 201', function() {\r",
+									"        response.should.have.status(201);\r",
+									"    });   \r",
+									"    it('should have contentType as JSON', function() {\r",
+									"        response.should.have.header('content-type', 'application/json;charset=UTF-8');\r",
+									"    });  \r",
+									"    it('should have valid schema', function() {\r",
+									"        let expSchema = {\r",
+									"            \"type\": \"object\",\r",
+									"            \"required\": [\r",
+									"                \"firstName\",\r",
+									"                \"lastName\",\r",
+									"                \"trusted\"\r",
+									"            ],\r",
+									"            \"properties\": {\r",
+									"                \"firstName\": {\r",
+									"                    \"type\": \"string\"\r",
+									"            },\r",
+									"                \"lastName\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                },\r",
+									"                \"trusted\": {\r",
+									"                    \"type\": \"boolean\"\r",
+									"                }\r",
+									"            }\r",
+									"        }\r",
+									"        response.body.should.have.schema(expSchema);\r",
+									"    });   \r",
+									"    it('should have firstName', function() {\r",
+									"        response.body.should.have.property(\"firstName\").and.equal(environment.fakeFN);\r",
+									"        // u can write code\r",
+									"    });   \r",
+									"    it('should have lastName', function() {\r",
+									"        response.body.should.have.property(\"lastName\").and.equal(environment.fakeLN);\r",
+									"    });   \r",
+									"     it('should have trusted as false', function() {\r",
+									"        response.body.should.have.property(\"trusted\").and.equal (false);\r",
+									"    }); \r",
+									"     it('should have empty array under apartments', function() {\r",
+									"        response.body.should.have.property(\"apartments\").that.eql([]);\r",
+									"    }); \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "94c97ed4-9139-4e9a-a0cb-00a2df5f3992",
+								"exec": [
+									"pm.environment.set(\"fakeFN\", Math.random().toString(36).substring(2));\r",
+									"pm.environment.set(\"fakeLN\", Math.random().toString(36).substring(7));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"{{fakeFN}}\",\r\n  \"lastName\": \"{{fakeLN}}\",\r\n  \"trusted\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/landlords",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"landlords"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This will create, retrive, update, and delete any landlord by id",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "2. Get - retrive all landlords",
+			"item": [
+				{
+					"name": "Get_landlord_by_ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8ecb189-8ab0-42e9-9e3a-e3b696c8c6fd",
+								"exec": [
+									"eval(globals.postmanBDD); // inherit\r",
+									"\r",
+									"describe('Verify existing landlord by id', function() {\r",
+									"    it('should return 200', function() {\r",
+									"        response.should.have.status(200);\r",
+									"    });   \r",
+									"    it('should have contentType as JSON', function() {\r",
+									"        response.should.have.header('content-type', 'application/json;charset=UTF-8');\r",
+									"    });  \r",
+									"    it('should have valid schema', function() {\r",
+									"        let expSchema = {\r",
+									"            \"type\": \"object\",\r",
+									"            \"required\": [\r",
+									"                \"firstName\",\r",
+									"                \"lastName\",\r",
+									"                \"trusted\"\r",
+									"            ],\r",
+									"            \"properties\": {\r",
+									"                \"firstName\": {\r",
+									"                    \"type\": \"string\"\r",
+									"            },\r",
+									"                \"lastName\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                },\r",
+									"                \"trusted\": {\r",
+									"                    \"type\": \"boolean\"\r",
+									"                }\r",
+									"            }\r",
+									"        }\r",
+									"        response.body.should.have.schema(expSchema);\r",
+									"    });   \r",
+									"    it('should have firstName', function() {\r",
+									"        response.body.should.have.property(\"firstName\").and.equal(environment.fakeFN);\r",
+									"        // u can write code\r",
+									"    });   \r",
+									"    it('should have lastName', function() {\r",
+									"        response.body.should.have.property(\"lastName\").and.equal(environment.fakeLN);\r",
+									"    });   \r",
+									"     it('should have trusted as false', function() {\r",
+									"        response.body.should.have.property(\"trusted\").and.equal (false);\r",
+									"    }); \r",
+									"     it('should have empty array under apartments', function() {\r",
+									"        response.body.should.have.property(\"apartments\").that.eql([]);\r",
+									"    }); \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/landlords/{{landlordId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"landlords",
+								"{{landlordId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This will retrive all landlords",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "3. Put - update landlord",
+			"item": [
+				{
+					"name": "Put_update landlord_by_ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "cb30e326-19a2-4c52-8dfb-ad44013cd031",
+								"exec": [
+									"pm.environment.set(\"fakeFN_update\", Math.random().toString(36).substring(2));\r",
+									"pm.environment.set(\"fakeLN_update\", Math.random().toString(36).substring(7));\r",
+									"// code"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"firstName\": \"{{fakeFN_update}}\",\r\n  \"lastName\": \"{{fakeLN_update}}\",\r\n  \"trusted\": false\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/landlords/{{landlordId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"landlords",
+								"{{landlordId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify updated info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a65f8f95-8631-41ce-bb51-54df48e6d16b",
+								"exec": [
+									"eval(globals.postmanBDD); // inherit\r",
+									"\r",
+									"describe('Verify update landlord info is updated', function() {\r",
+									"    it('should return 200', function() {\r",
+									"        response.should.have.status(200);\r",
+									"    });   \r",
+									"    it('should have contentType as JSON', function() {\r",
+									"        response.should.have.header('content-type', 'application/json;charset=UTF-8');\r",
+									"    });  \r",
+									"    it('should have valid schema', function() {\r",
+									"        let expSchema = {\r",
+									"            \"type\": \"object\",\r",
+									"            \"required\": [\r",
+									"                \"firstName\",\r",
+									"                \"lastName\",\r",
+									"                \"trusted\"\r",
+									"            ],\r",
+									"            \"properties\": {\r",
+									"                \"firstName\": {\r",
+									"                    \"type\": \"string\"\r",
+									"            },\r",
+									"                \"lastName\": {\r",
+									"                    \"type\": \"string\"\r",
+									"                },\r",
+									"                \"trusted\": {\r",
+									"                    \"type\": \"boolean\"\r",
+									"                }\r",
+									"            }\r",
+									"        }\r",
+									"        response.body.should.have.schema(expSchema);\r",
+									"    });   \r",
+									"    it('should have firstName', function() {\r",
+									"        response.body.should.have.property(\"firstName\").and.equal(environment.fakeFN_update);\r",
+									"        // u can write code\r",
+									"    });   \r",
+									"    it('should have lastName', function() {\r",
+									"        response.body.should.have.property(\"lastName\").and.equal(environment.fakeLN_update);\r",
+									"    });   \r",
+									"     it('should have trusted as false', function() {\r",
+									"        response.body.should.have.property(\"trusted\").and.equal (false);\r",
+									"    }); \r",
+									"     it('should have empty array under apartments', function() {\r",
+									"        response.body.should.have.property(\"apartments\").that.eql([]);\r",
+									"    }); \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/landlords/{{landlordId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"landlords",
+								"{{landlordId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This is to update landlord",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "8faf3f86-0744-4b8f-bcae-d50c9c6de0cf",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "9b5ae13f-b962-4830-9289-a16a4303a8e9",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "4. DELETE - remove landlord",
+			"item": [
+				{
+					"name": "Delete_landlord_by_ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/landlords/{{landlordId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"landlords",
+								"{{landlordId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_all_landlords",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/landlords/{{landlordId}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"landlords",
+								"{{landlordId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "This is to remove landlord",
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
